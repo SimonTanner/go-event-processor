@@ -1,9 +1,11 @@
 package main
-	
+
 import (
 	"context"
+	"encoding/json"
 	"log"
 
+	"github.com/SimonTanner/go-event-processor/lambda/types"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -19,7 +21,18 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 		recordDataBytes := record.Kinesis.Data
 		recordDataText := string(recordDataBytes)
 		log.Printf("record data: %v", recordDataText)
+
+		message := types.Message{}
+		err := json.Unmarshal(recordDataBytes, &message)
+		if err != nil {
+			log.Printf("error unmarshalling record: %v", err)
+			return err
+		}
+
+		message.Timestamp = record.Kinesis.ApproximateArrivalTimestamp.Time
+		log.Printf("successfully converted record to struct: %v", message)
 	}
+
 	log.Printf("successfully processed %v records", len(kinesisEvent.Records))
 	return nil
 }
