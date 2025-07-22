@@ -30,3 +30,15 @@ type Message struct {
 	Client string    `json:"Client" validate:"required"`
 	Type   EventType `json:"Type" validate:"required"`
 }
+
+type SharedData struct {
+	CustomerID uuid.UUID `json:"CustomerID" validate:"required"`
+	AccountID  uuid.UUID `json:"AccountID" validate:"required"`
+	Time       time.Time `json:"Time" validate:"required"`
+}
+
+type Event struct {
+	SharedData
+	TransactionID uuid.UUID `json:"TransactionID" validate:"required"`
+	FraudScore    int       `json:"FraudScore" validate:"required"`
+}

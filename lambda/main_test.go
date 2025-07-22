@@ -56,7 +56,7 @@ func TestHandler(t *testing.T) {
 				}
 			} else {
 				if err == nil {
-					t.Error("expected error to be raised")
+					t.Error("expected an error to be raised")
 				}
 			}
 		})
