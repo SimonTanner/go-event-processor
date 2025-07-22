@@ -8,6 +8,7 @@ import (
 	"github.com/SimonTanner/go-event-processor/lambda/types"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/go-playground/validator/v10"
 )
 
 func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
@@ -31,6 +32,17 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 
 		message.Timestamp = record.Kinesis.ApproximateArrivalTimestamp.Time
 		log.Printf("successfully converted record to struct: %v", message)
+
+		validate := validator.New()
+
+		// Validate the Message
+		err = validate.Struct(message)
+		if err != nil {
+			// Validation failed, handle the error
+			errors := err.(validator.ValidationErrors)
+			log.Printf("errors validating struct %s", errors)
+			return errors
+		}
 	}
 
 	log.Printf("successfully processed %v records", len(kinesisEvent.Records))
