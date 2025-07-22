@@ -29,6 +29,12 @@ func TestHandler(t *testing.T) {
 			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d3", "Source": "application", "Client": "application", "Type": "transaction"}`,
 			shouldError: true,
 		},
+		{
+			name:        "invalid Type",
+			time:        TS,
+			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d37", "Source": "application", "Client": "application", "Type": "blah"}`,
+			shouldError: true,
+		},
 	}
 
 	for _, tt := range tests {

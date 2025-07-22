@@ -36,6 +36,7 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 		log.Printf("successfully converted record to struct: %v", message)
 
 		validate = validator.New()
+		validate.RegisterStructValidation(types.MessageStructLevelValidation, types.Message{})
 
 		// Validate the Message
 		err = validate.Struct(message)

@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
@@ -41,4 +42,13 @@ type Event struct {
 	SharedData
 	TransactionID uuid.UUID `json:"TransactionID" validate:"required"`
 	FraudScore    int       `json:"FraudScore" validate:"required"`
+}
+
+func MessageStructLevelValidation(sl validator.StructLevel) {
+
+	message := sl.Current().Interface().(Message)
+
+	if message.Type != TypeTransaction && message.Type != TypeFraudDetection && message.Type != TypeCheckAccount {
+		sl.ReportError(message.Type, "Type", "Type", "", "")
+	}
 }
