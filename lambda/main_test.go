@@ -18,9 +18,14 @@ func TestHandler(t *testing.T) {
 		shouldError bool
 	}{
 		{
-			name:        "valid data",
-			time:        TS,
-			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d37", "Source": "application", "Client": "application", "Type": "transaction"}`,
+			name: "valid data",
+			time: TS,
+			eventData: `{
+			"ID":"0124e053-3580-7000-b158-3401dd4f2d37",
+			"Source": "application",
+			"Client": "application",
+			"Type": "transaction",
+			"Event": {"TransactionID":"0124e053-3580-7000-a762-0502e4a1022e","FraudScore":20,"CustomerID":"0124e053-3580-7000-a762-0502e4a1022e","AccountID":"0124e053-3580-7000-a762-0502e4a1022e","Time":"2009-11-10T23:00:00Z"}}`,
 			shouldError: false,
 		},
 		{
@@ -74,5 +79,4 @@ func TestHandler(t *testing.T) {
 		})
 
 	}
-
 }

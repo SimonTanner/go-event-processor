@@ -27,9 +27,9 @@ type Message struct {
 	ID        uuid.UUID `json:"ID" validate:"required"`
 	Source    Source    `json:"Source" validate:"required"`
 	Timestamp time.Time `json:"Timestamp" validate:"required"`
-	// Event     Event     `json:"Event" validate:"required"`
-	Client string    `json:"Client" validate:"required"`
-	Type   EventType `json:"Type" validate:"required"`
+	Event     Event     `json:"Event" validate:"required"`
+	Client    string    `json:"Client" validate:"required"`
+	Type      EventType `json:"Type" validate:"required"`
 }
 
 type SharedData struct {
@@ -40,8 +40,8 @@ type SharedData struct {
 
 type Event struct {
 	SharedData
-	TransactionID uuid.UUID `json:"TransactionID" validate:"required"`
-	FraudScore    int       `json:"FraudScore" validate:"required"`
+	TransactionID uuid.UUID `json:"TransactionID,omitempty"`
+	FraudScore    *int      `json:"FraudScore,omitempty"`
 }
 
 func MessageStructLevelValidation(sl validator.StructLevel) {
@@ -54,5 +54,16 @@ func MessageStructLevelValidation(sl validator.StructLevel) {
 
 	if message.Source != SourceApplication && message.Source != SourceAuthorizer && message.Source != SourceMonitoring {
 		sl.ReportError(message.Type, "Type", "Type", "", "")
+	}
+
+	switch message.Type {
+	case TypeFraudDetection:
+		if message.Event.FraudScore == nil {
+			sl.ReportError(message.Event, "Event.FraudScore", "Type", "", "")
+		}
+		// case TypeTransaction:
+		// 	if message.Event.SharedData == nil {
+		// 		sl.ReportError(message.Event, "Event.TransactionID", "Type", "", "")
+		// 	}
 	}
 }
