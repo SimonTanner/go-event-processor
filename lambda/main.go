@@ -11,6 +11,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var validate *validator.Validate
+
 func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 	if len(kinesisEvent.Records) == 0 {
 		log.Printf("Kinesis event record lenght is 0")
@@ -33,7 +35,7 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 		message.Timestamp = record.Kinesis.ApproximateArrivalTimestamp.Time
 		log.Printf("successfully converted record to struct: %v", message)
 
-		validate := validator.New()
+		validate = validator.New()
 
 		// Validate the Message
 		err = validate.Struct(message)

@@ -18,9 +18,16 @@ func TestHandler(t *testing.T) {
 		shouldError bool
 	}{
 		{
+			name:        "valid data",
 			time:        TS,
-			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d37", "Source": "application", "Client": "application"}`,
+			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d37", "Source": "application", "Client": "application", "Type": "transaction"}`,
 			shouldError: false,
+		},
+		{
+			name:        "invalid ID",
+			time:        TS,
+			eventData:   `{"ID":"0124e053-3580-7000-b158-3401dd4f2d3", "Source": "application", "Client": "application", "Type": "transaction"}`,
+			shouldError: true,
 		},
 	}
 
@@ -46,6 +53,10 @@ func TestHandler(t *testing.T) {
 			if !tt.shouldError {
 				if err != nil {
 					t.Errorf("unexpected error: %s", err)
+				}
+			} else {
+				if err == nil {
+					t.Error("expected error to be raised")
 				}
 			}
 		})
