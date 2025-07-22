@@ -51,4 +51,8 @@ func MessageStructLevelValidation(sl validator.StructLevel) {
 	if message.Type != TypeTransaction && message.Type != TypeFraudDetection && message.Type != TypeCheckAccount {
 		sl.ReportError(message.Type, "Type", "Type", "", "")
 	}
+
+	if message.Source != SourceApplication && message.Source != SourceAuthorizer && message.Source != SourceMonitoring {
+		sl.ReportError(message.Type, "Type", "Type", "", "")
+	}
 }
