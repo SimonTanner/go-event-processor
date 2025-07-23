@@ -4,16 +4,29 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 
+	"github.com/SimonTanner/go-event-processor/lambda/persist"
 	"github.com/SimonTanner/go-event-processor/lambda/types"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/go-playground/validator/v10"
 )
 
 var validate *validator.Validate
 
-func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
+type Handler struct {
+	PersistenceLayer persist.IPersistenceLayer
+}
+
+func NewHandler(persistenceLayer persist.IPersistenceLayer) Handler {
+	return Handler{
+		PersistenceLayer: persistenceLayer,
+	}
+}
+
+func (h *Handler) handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 	if len(kinesisEvent.Records) == 0 {
 		log.Printf("Kinesis event record lenght is 0")
 		return nil
@@ -46,6 +59,12 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 			log.Printf("errors validating struct %s", errors)
 			return errors
 		}
+
+		err = h.PersistenceLayer.Persist(ctx, message)
+		if err != nil {
+			log.Printf("errors saving message to DB %s", err)
+			return err
+		}
 	}
 
 	log.Printf("successfully processed %v records", len(kinesisEvent.Records))
@@ -53,5 +72,22 @@ func handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 }
 
 func main() {
-	lambda.Start(handler)
+	region := os.Getenv("AWS_REGION")
+	tableName := os.Getenv("DYNAMO_TABLE_NAME")
+	if tableName == "" {
+		tableName = "GoEvents"
+	}
+	log.Printf("creating dynamodb client for table: %s, in region: %s", tableName, region)
+
+	ctx := context.Background()
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
+	if err != nil {
+		log.Printf("errors loading aws config: %s", err)
+		return
+	}
+
+	pl := persist.NewPersistenceLayer(cfg, tableName)
+
+	h := NewHandler(pl)
+	lambda.Start(h.handler)
 }

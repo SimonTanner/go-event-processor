@@ -5,8 +5,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/SimonTanner/go-event-processor/lambda/types"
 	"github.com/aws/aws-lambda-go/events"
 )
+
+type MockPersistenceLayer struct {
+	PersistCalls []map[string]interface{}
+}
+
+func (p MockPersistenceLayer) Persist(ctx context.Context, msg types.Message) error {
+	p.PersistCalls = append(p.PersistCalls, map[string]interface{}{
+		"ctx":     ctx,
+		"message": msg,
+	})
+	return nil
+}
 
 func TestHandler(t *testing.T) {
 	TS := time.Now()
@@ -65,7 +78,11 @@ func TestHandler(t *testing.T) {
 				},
 			}
 
-			err := handler(ctx, events)
+			pl := MockPersistenceLayer{}
+
+			h := NewHandler(pl)
+
+			err := h.handler(ctx, events)
 
 			if !tt.shouldError {
 				if err != nil {
