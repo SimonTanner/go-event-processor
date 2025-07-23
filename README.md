@@ -29,7 +29,7 @@ Once the localstack container is in a ready state you can run the bash script as
 
 ```bash create-resources.sh```
 
-__N.B__ this requires `jq` in order to work
+___N.B___ this requires `jq` in order to work
 
 this will create the different infrastructure:
 1. Kinesis Stream
@@ -43,6 +43,14 @@ In order to send data to the stream there's some test data and a script which wi
 
 Unfortunately in order to see the logs for the lambda you need to call docker log with the container ID that is spawned by localstack in order to run lambdas, not the main localstack container. I've added a script `get-lambda-logs.sh` for simplicity. This requires `jq` in order to get the correct container.
 
+You can also check the event has been persisted in dynamo by running the following:
 
+``` bash get-dynamo-item.sh```
+
+___N.B___ if you get an error for credentials you might need to add the profile to `~/.aws/credentials` & `~/.aws/confg` as defined in the files `aws-config` & `aws-credentials`
+
+## Next Steps
+
+If I'd had more time I would have added more logic around the different event types and what different data they would have and made the logic more complex around that. However I chose to focus more on adding the ability persist data to the lambda as it sounded like an important criteria.
 
 
