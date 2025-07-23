@@ -13,13 +13,12 @@ echo "[+] Creating Kinesis stream: $STREAM_NAME"
 
 aws --endpoint-url="$ENDPOINT_URL" kinesis create-stream --stream-name "$STREAM_NAME" \
     --shard-count 1 \
-    --region "$AWS_REGION" \
-    --profile localstack
+    --region "$AWS_REGION"
 
 sleep 5
 
 KINESIS_ARN=`(aws --endpoint-url="$ENDPOINT_URL" kinesis describe-stream --stream-name "$STREAM_NAME" \
-    --region "$AWS_REGION" --profile localstack | jq .StreamDescription.StreamARN)`
+    --region "$AWS_REGION"  | jq .StreamDescription.StreamARN)`
 
 KINESIS_ARN=`(echo ${KINESIS_ARN//\"})`
 
@@ -35,7 +34,7 @@ aws --endpoint-url="$ENDPOINT_URL" lambda create-function --function-name "$FUNC
     --architectures x86_64 \
     --role arn:aws:iam::000000000000:role/lambda-ex \
     --zip-file fileb://"$FUNCTION_NAME".zip \
-    --profile localstack >> /dev/null 2>&1
+    >> /dev/null 2>&1
 
 sleep 5
 
@@ -44,7 +43,7 @@ echo "[+] Adding event source mapping between Lambda and Kinesis Stream, ARN: $K
 aws --endpoint-url="$ENDPOINT_URL" lambda create-event-source-mapping --function-name "$FUNCTION_NAME" \
     --event-source $KINESIS_ARN \
     --batch-size 1 --starting-position LATEST \
-    --profile localstack >> /dev/null 2>&1
+    >> /dev/null 2>&1
 
 echo "[+] Creating DynamoDB table"
 
