@@ -26,8 +26,10 @@ In order to start the localstack container enter:
 ```docker compose up --build```
 
 Once the localstack container is in a ready state you can run the bash script as follows:
+
 ```bash create-resources.sh```
-__N.B__ this requires `jq`
+
+__N.B__ this requires `jq` in order to work
 
 this will create the different infrastructure:
 1. Kinesis Stream
@@ -35,8 +37,12 @@ this will create the different infrastructure:
 3. Lambda Kinesis Event Source Mapping
 4. DynamoDB Table
 
-In order to send data to the stream there's some test data and a script which will send this.
+In order to send data to the stream there's some test data and a script which will send this, by running:
+
+```bash put-records.sh```
 
 Unfortunately in order to see the logs for the lambda you need to call docker log with the container ID that is spawned by localstack in order to run lambdas, not the main localstack container. I've added a script `get-lambda-logs.sh` for simplicity. This requires `jq` in order to get the correct container.
+
+
 
 
