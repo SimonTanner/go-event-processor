@@ -9,8 +9,6 @@ STREAM_NAME="eventStream"
 FUNCTION_NAME="goEventProcessor"
 DYNAMO_TABLE_NAME="GoEvents"
 
-# echo "home: $HOME, user: $USER, localstack hostname: $HOSTNAME, $LOCALSTACK_HOST"
-
 echo "[+] Creating Kinesis stream: $STREAM_NAME"
 
 aws --endpoint-url="$ENDPOINT_URL" kinesis create-stream --stream-name "$STREAM_NAME" \
@@ -24,8 +22,6 @@ KINESIS_ARN=`(aws --endpoint-url="$ENDPOINT_URL" kinesis describe-stream --strea
     --region "$AWS_REGION" --profile localstack | jq .StreamDescription.StreamARN)`
 
 KINESIS_ARN=`(echo ${KINESIS_ARN//\"})`
-
-# echo "Kinesis ARN: $KINESIS_ARN"
 
 echo "[+] building go binary"
 
@@ -60,25 +56,3 @@ aws --endpoint-url="$ENDPOINT_URL" dynamodb create-table \
     --key-schema AttributeName=Client,KeyType=HASH AttributeName=CustomerID,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST \
     --table-class STANDARD >> /dev/null 2>&1
-
-# aws --endpoint-url="$ENDPOINT_URL" dynamodb create-table \
-#     --table-name "$DYNAMO_TABLE_NAME" \
-#     --attribute-definitions \
-#         AttributeName=Client,AttributeType=S \
-#         AttributeName=CustomerID,AttributeType=S \
-#         AttributeName=AccountID,AttributeType=S \
-#         AttributeName=EventID,AttributeType=S \
-#         AttributeName=Source,AttributeType=S \
-#         AttributeName=Timestamp,AttributeType=N \
-#         AttributeName=Type,AttributeType=S \
-#         AttributeName=Payload,AttributeType=B \
-#     --key-schema AttributeName=Client,KeyType=HASH AttributeName=AccountID,KeyType=RANGE \
-#     --billing-mode PAY_PER_REQUEST \
-#     --table-class STANDARD
-    #     AttributeName=CustomerID,KeyType=RANGE AttributeName=EventID,KeyType=RANGE \
-    #     AttributeName=Source,KeyType=RANGE AttributeName=Timestamp,KeyType=RANGE \
-    #     AttributeName=CustomerID,KeyType=RANGE AttributeName=CustomerID,KeyType=RANGE \
-    #     AttributeName=CustomerID,KeyType=RANGE AttributeName=CustomerID,KeyType=RANGE \
-
-    # --billing-mode PAY_PER_REQUEST \
-    # --table-class STANDARD

@@ -28,7 +28,7 @@ func NewHandler(persistenceLayer persist.IPersistenceLayer) Handler {
 
 func (h *Handler) handler(ctx context.Context, kinesisEvent events.KinesisEvent) error {
 	if len(kinesisEvent.Records) == 0 {
-		log.Printf("Kinesis event record lenght is 0")
+		log.Printf("Kinesis event record length is 0, exiting")
 		return nil
 	}
 
@@ -54,7 +54,6 @@ func (h *Handler) handler(ctx context.Context, kinesisEvent events.KinesisEvent)
 		// Validate the Message
 		err = validate.Struct(message)
 		if err != nil {
-			// Validation failed, handle the error
 			errors := err.(validator.ValidationErrors)
 			log.Printf("errors validating struct %s", errors)
 			return errors
