@@ -5,8 +5,8 @@ export AWS_SECRET_ACCESS_KEY="test"
 ENDPOINT_URL="http://localhost:4566"
 STREAM_NAME="eventStream"
 
-TEST_DATA=`(echo testdata | base64)`
-TEST_DATA=`(cat test-data.json | base64)`
+# TEST_DATA=`(echo testdata | base64)`
+TEST_DATA=`(cat test-data/test-transaction-1.json | base64)`
 
 aws --endpoint-url="$ENDPOINT_URL" kinesis put-record --stream-name "$STREAM_NAME" \
     --partition-key 1 --data "${TEST_DATA}" \
